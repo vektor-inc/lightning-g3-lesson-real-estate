@@ -113,5 +113,3 @@ add_action( 'init', 'my_add_custom_taxonomy', 0 );
 
 ---
 
-
-
