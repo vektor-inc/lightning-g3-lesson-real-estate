@@ -209,58 +209,42 @@ VK_Component_Posts::the_view( $post, $options );
 
 もちろん VK_Component_Posts を使用しないで全部自分で手書きでもOK。
 
-### 子テーマではなく自作プラグインなどから改変する（Lightningマスター向け）
-
-参考コード
+### 子テーマの loop-item-chintai.php も作らずに 有料版のプラグインも使わずに一覧の画面も改変する
 
 ```
 /**
- * デフォルトの投稿ループを非表示にする
+ * アーカイブページなどで一件分の表示要素を書き換え
  */
-function my_hidden_normal_loop_custom() {
-	$post_type_info = VK_Helpers::get_post_type_info();
-	if ( 'chintai' === $post_type_info['slug'] ) {
-		$return = true;
+function my_vk_post_options_chintai( $options ) {
+	// 投稿タイプが chintai の時
+	if ( 'chintai' === get_post_type() ) {
+			// 表示する要素の設定を変更
+			global $post;
+			$options = array(
+				// card, card-noborder, card-intext, card-horizontal , media, postListText
+				'layout'                     => 'media',
+				'display_image'              => true,
+				'display_image_overlay_term' => true,
+				'display_excerpt'            => true,
+				'display_date'               => false,
+				'display_new'                => true,
+				'display_taxonomies'         => true,
+				'display_btn'                => false,
+				'image_default_url'          => false,
+				'overlay'                    => false,
+				'btn_text'                   => __( 'Read more', 'lightning' ),
+				'btn_align'                  => 'text-right',
+				'new_text'                   => __( 'New!!', 'lightning' ),
+				'new_date'                   => 7,
+				'class_outer'                => 'vk_post-col-sm-12 vk_post-col-md-12 vk_post-col-lg-6 vk_post-col-xl-6',
+				'class_title'                => '',
+				'body_prepend'               => '',
+				'body_append'                => '',
+			);
 	}
-	return $return;
+	return $options;
 }
-add_filter( 'lightning_is_extend_loop', 'my_hidden_normal_loop_custom' );
-
-/**
- * カスタム投稿タイプ用のループを表示する
- */
-function my_custom_loop_archive() {
-	$post_type_info = VK_Helpers::get_post_type_info();
-	if ( 'chintai' === $post_type_info['slug'] ) {
-		global $wp_query;
-		$options      = array(
-			// card, card-noborder, card-intext, card-horizontal , media, postListText
-			'layout'                     => 'media',
-			'display_image'              => true,
-			'display_image_overlay_term' => true,
-			'display_excerpt'            => true,
-			'display_date'               => false,
-			'display_new'                => true,
-			'display_taxonomies'         => true,
-			'display_btn'                => false,
-			'image_default_url'          => false,
-			'overlay'                    => false,
-			'btn_text'                   => __( 'Read more', 'lightning' ),
-			'btn_align'                  => 'text-right',
-			'new_text'                   => __( 'New!!', 'lightning' ),
-			'new_date'                   => 7,
-			'class_outer'                => 'vk_post-col-sm-12 vk_post-col-md-12 vk_post-col-lg-6 vk_post-col-xl-6',
-			'class_title'                => '',
-			'body_prepend'               => '',
-			'body_append'                => '',
-		);
-		$options_loop = array(
-			'class_loop_outer' => 'vk_posts-col-lg-4',
-		);
-		VK_Component_Posts::the_loop( $wp_query, $options, $options_loop );
-	}
-}
-add_action( 'lightning_extend_loop', 'my_custom_loop_archive' );
+add_filter( 'vk_post_options', 'my_vk_post_options_chintai' );
 ```
 
 ---
@@ -384,11 +368,22 @@ function my_custom_loop() {
 add_shortcode( 'my_custom_loop', 'my_custom_loop' );
 ```
 
-_g3/template-parts/loop-item-chintai.php も以下のように書き換えられます。
+アーカイブページ用のの書き換えも $option の部分を 以下のように関数で取得に書き換えます。
 
 ```
-$options      = my_get_options_chintai();
-VK_Component_Posts::the_view( $post, $options );
+/**
+ * アーカイブページなどで一件分の表示要素を書き換え
+ */
+function my_vk_post_options_chintai( $options ) {
+	// 投稿タイプが chintai の時
+	if ( 'chintai' === get_post_type() ) {
+			// 表示する要素の設定を変更
+			global $post;
+			$options      = my_get_options_chintai();
+	}
+	return $options;
+}
+add_filter( 'vk_post_options', 'my_vk_post_options_chintai' );
 ```
 
 ---
@@ -403,33 +398,44 @@ VK_Component_Posts::the_view( $post, $options );
 
 ---
 
-## 検索結果画面の改変
+## 検索結果画面の調整
 
 通常の検索結果画面のレイアウトと、特定のカスタム投稿タイプのレイアウトを変更したい場合
 
+現状の問題点
+
+* 今までのコードだと、キーワード検索で 検索該当記事が 物件情報検索と通常の投稿で両方該当したりすると、
+検索結果画面で記事の投稿タイプ毎にレイアウトが異なってしまう。
+* 投稿タイプが chintai なら問答無用ですべて書き換えてしまっている。  
+→ VK Blocks Pro でサイドバーなどに表示項目を減らして表示しようとしても、投稿タイプが chintai ならすべて上書きされてしまう
+
+表示を切り替える条件をもう少し細かく設定する
+
 ```
 /**
- * 検索結果画面のレイアウトの改変
+ * アーカイブページなどで一件分の表示要素を書き換え
  */
-function my_vk_post_options_chintai_search_result( $options ) {
+function my_vk_post_options_chintai( $options ) {
+	// 投稿タイプが chintai の時
+	if ( 'chintai' === get_post_type() ) {
+		// 投稿タイプなどアーカイブページ or 検索で投稿タイプ chintai が指定のページの場合
+		if ( is_archive() || isset( $_GET['post_type'] ) && 'chintai' === $_GET['post_type']  ){
 
-	// 検索結果画面で該当する投稿が特定のカスタム投稿タイプの場合
-	if ( is_search() && 'chintai' === get_post_type() ) {
+			// ただし、ここまでの条件でもサイドバーに配置されている場合など
+			// 改変してほしくないケースもあるので必要に応じて条件を指定する
 
-		// 賃貸物件とその他の投稿タイプで同じキーワードを含む投稿の場合、
-		// キーワード検索だとレイアウトが統一されない問題がある。
-		// → 検索条件に投稿タイプ指定がある場合のみ改変
-		if ( ! empty( $_GET['post_type'] ) ) {
-
-			// 表示する要素の設定を変更
-			$options = my_get_options_chintai();
+			// サイドバーに Media Posts BS4 を配置して 新着の表示を 7 日に設定した場合、
+			// $options['new_date'] が 7 以外の場合に $option を改変する
+			if ( 7 != $options['new_date'] ){
+				// 表示する要素の設定を変更
+				$options = my_get_options_chintai();
+			}
 		}
 	}
 	return $options;
 }
-add_filter( 'vk_post_options', 'my_vk_post_options_chintai_search_result' );
+add_filter( 'vk_post_options', 'my_vk_post_options_chintai' );
 ```
-
 
 ---
 ## カスタムフィールドの登録・表示
@@ -438,7 +444,8 @@ add_filter( 'vk_post_options', 'my_vk_post_options_chintai_search_result' );
 * カスタムフィールド > 新規追加
 * フィールドを登録 & フィールドグループを表示する条件を指定
 
-### カスタムフィールドの値などを投稿一覧に挿入する
+---
+## カスタムフィールドの値などを投稿一覧に挿入する
 
 既に作成済みの 賃貸情報 で表示する設定に、カスタムフィールドの情報を追加します
 
@@ -482,9 +489,23 @@ function my_get_option_chintai(){
 }
 ```
 
-
-
-
 ---
+## 物件詳細ページにカスタムフィールドの値などを表示する
 
-## 新着一覧スライダー（有料版のみ）
+_g3/template-parts/entry.php を子テーマに複製...
+してもできますが、本文欄下などに何か要素を追加するだけならアクションフックを使います。
+
+```
+function my_add_bukken_info($post){
+	// カスタムフィールドの値など独自に表示したい要素
+	global $post;
+	$append_html  = '<p class="data-yachin"><span class="data-yachin-number">' . esc_html( $post->yachin ) . '</span>万円</p>';
+	$append_html .= '<table class="table-sm mt-3">';
+	$append_html .= '<tr><th>管理費</th><td class="text-right">' . esc_html( $post->kanrihi ) . '円</td></tr>';
+	$append_html .= '<tr><th>礼金</th><td class="text-right">' . esc_html( $post->reikin ) . '円</td></tr>';
+	$append_html .= '<tr><th>築年数</th><td class="text-right">' . esc_html( $post->chikunen ) . '年</td></tr>';
+	$append_html .= '</table>';
+	echo $append_html;
+}
+add_action( 'lightning_entry_body_apppend', 'my_add_bukken_info' );
+```
