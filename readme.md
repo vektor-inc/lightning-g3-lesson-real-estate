@@ -15,6 +15,7 @@ Lightningで極めて簡単な物件情報サイトを作る練習用のプラ�
 #### 有効化するプラグイン 
 
 * VK All in One Expansion Unit
+* VK Filter Search （Pro版推奨）
 * VK Blocks Pro （激しく推奨）
 
 #### その他の設定
@@ -324,12 +325,63 @@ add_shortcode( 'my_custom_loop', 'my_custom_loop' );
 
 ## 検索ボックスの設置
 
+プラグイン VK Filter Search をインストール
+
+* トップページに指定した固定ページに VK Filter Search ブロックを配置
+* 配置したブロックで、検索結果画面にもVK Filter Search ブロックを表示するように設定
+* 配置したブロックで、物件情報アーカイブのトップにも VK Filter Search ブロックを表示するように設定
+
 ---
 
 ## 検索結果画面の改変
 
+通常の検索結果画面のレイアウトと、特定のカスタム投稿タイプのレイアウトを変更したい場合
+
+```
+/**
+ * 検索結果画面のレイアウトの改変
+ */
+function my_chintai_search_result_vk_post_options( $options ) {
+	if ( is_search() && 'chintai' === get_post_type() ) {
+
+		// 賃貸物件とその他の投稿タイプで同じキーワードを含む投稿の場合、
+		// キーワード検索だとレイアウトが統一されない問題がある。
+		// → 検索条件に投稿タイプ指定がある場合のみ改変
+		if ( ! empty( $_GET['post_type'] ) ) {
+
+			// 表示する要素の設定を変更
+			$options = array(
+				// card, card-noborder, card-intext, card-horizontal , media, postListText
+				'layout'                     => 'card-noborder',
+				'display_image'              => true,
+				'display_image_overlay_term' => true,
+				'display_excerpt'            => true,
+				'display_date'               => false,
+				'display_new'                => true,
+				'display_taxonomies'         => true,
+				'display_btn'                => false,
+				'image_default_url'          => false,
+				'overlay'                    => false,
+				'btn_text'                   => __( 'Read more', 'lightning' ),
+				'btn_align'                  => 'text-right',
+				'new_text'                   => __( 'New!!', 'lightning' ),
+				'new_date'                   => 7,
+				'class_outer'                => 'vk_post-col-sm-6 vk_post-col-md-4 vk_post-col-xl-3',
+				'class_title'                => '',
+				'body_prepend'               => '',
+				'body_append'                => '',
+			);
+		}
+	}
+	return $options;
+}
+add_filter( 'vk_post_options', 'my_chintai_search_result_vk_post_options' );
+```
+
 ---
 ## カスタムフィールドの表示
+
+
 
 ---
 
