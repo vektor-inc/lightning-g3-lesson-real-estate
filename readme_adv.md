@@ -1,5 +1,3 @@
-
-
 ## カスタム投稿タイプ&カスタム分類をコードを書いて追加する場合
 
 ### コードを書いて設定する場合
@@ -75,7 +73,7 @@ https://wpdocs.osdn.jp/%E9%96%A2%E6%95%B0%E3%83%AA%E3%83%95%E3%82%A1%E3%83%AC%E3
 
 ## 物件情報の 一覧ページでの１件分の表示をコードでカスタマイズする方法
 
-### 子テーマの loop-item-chintai.php も作らずに 有料版のプラグインも使わずに一覧の画面も改変する
+### 有料版のプラグインも使わずに一覧の画面の表示要素を改変する
 
 子テーマのfunctions.phpなどに以下を記載してください
 
@@ -88,28 +86,28 @@ function my_vk_post_options_chintai( $options ) {
 	// 投稿タイプが chintai の時
 	if ( 'chintai' === get_post_type() ) {
 
-			// 表示する要素の設定を変更
-			$options = array(
-				// card, card-noborder, card-intext, card-horizontal , media, postListText
-				'layout'                     => 'media',
-				'display_image'              => true,
-				'display_image_overlay_term' => true,
-				'display_excerpt'            => true,
-				'display_date'               => false,
-				'display_new'                => true,
-				'display_taxonomies'         => true,
-				'display_btn'                => false,
-				'image_default_url'          => false,
-				'overlay'                    => false,
-				'btn_text'                   => __( 'Read more', 'lightning' ),
-				'btn_align'                  => 'text-right',
-				'new_text'                   => __( 'New!!', 'lightning' ),
-				'new_date'                   => 7,
-				'class_outer'                => 'vk_post-col-xs-12 vk_post-col-sm-12 vk_post-col-md-12 vk_post-col-lg-6 vk_post-col-xl-6',
-				'class_title'                => '',
-				'body_prepend'               => '',
-				'body_append'                => '',
-			);
+		// 表示する要素の設定を変更
+		$options = array(
+			// card, card-noborder, card-intext, card-horizontal , media, postListText
+			'layout'                     => 'media',
+			'display_image'              => true,
+			'display_image_overlay_term' => true,
+			'display_excerpt'            => true,
+			'display_date'               => false,
+			'display_new'                => true,
+			'display_taxonomies'         => true,
+			'display_btn'                => false,
+			'image_default_url'          => false,
+			'overlay'                    => false,
+			'btn_text'                   => __( 'Read more', 'lightning' ),
+			'btn_align'                  => 'text-right',
+			'new_text'                   => __( 'New!!', 'lightning' ),
+			'new_date'                   => 7,
+			'class_outer'                => 'vk_post-col-xs-12 vk_post-col-sm-12 vk_post-col-md-12 vk_post-col-lg-6 vk_post-col-xl-6',
+			'class_title'                => '',
+			'body_prepend'               => '',
+			'body_append'                => '',
+		);
 	}
 	return $options;
 }
@@ -269,8 +267,8 @@ function my_vk_post_options_chintai( $options ) {
 	// 投稿タイプが chintai の時
 	if ( 'chintai' === get_post_type() ) {
 
-			// 表示する要素の設定を変更
-			$options      = my_get_options_chintai();
+		// 表示する要素の設定を変更
+		$options      = my_get_options_chintai();
 	}
 	return $options;
 }
@@ -325,7 +323,7 @@ function my_vk_post_options_chintai( $options ) {
 
 	// 投稿タイプが chintai の時
 	if ( 'chintai' === get_post_type() ) {
-		
+
 		// 投稿タイプなどアーカイブページ or 検索で投稿タイプ chintai が指定のページの場合
 		if ( is_archive() || isset( $_GET['post_type'] ) && 'chintai' === $_GET['post_type']  ){
 
