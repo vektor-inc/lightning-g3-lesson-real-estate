@@ -182,10 +182,10 @@ loop-item-chintai.php
 あらかじめ項目を設定すればそれっぽいHTMLになるようになっている。
 ここでは以下のようにするが、お好みに応じてパラメータを変更してください。
 
-```
+```_g3_template-parts/loop-item-chintai.php
 $options = array(
 	// card, card-noborder, card-intext, card-horizontal , media, postListText
-	'layout'                     => 'card',
+	'layout'                     => 'media',
 	'display_image'              => true,
 	'display_image_overlay_term' => true,
 	'display_excerpt'            => true,
@@ -199,7 +199,7 @@ $options = array(
 	'btn_align'                  => 'text-right',
 	'new_text'                   => __( 'New!!', 'lightning' ),
 	'new_date'                   => 7,
-	'class_outer'                => 'vk_post-col-sm-6 vk_post-col-md-4 vk_post-col-xl-3',
+	'class_outer'                => 'vk_post-col-sm-12 vk_post-col-md-12 vk_post-col-lg-6 vk_post-col-xl-6',
 	'class_title'                => '',
 	'body_prepend'               => '',
 	'body_append'                => '',
@@ -209,7 +209,7 @@ VK_Component_Posts::the_view( $post, $options );
 
 もちろん VK_Component_Posts を使用しないで全部自分で手書きでもOK。
 
-### 子テーマではなく自作プラグインなどから改変する（上級者向け）
+### 子テーマではなく自作プラグインなどから改変する（Lightningマスター向け）
 
 参考コード
 
@@ -234,14 +234,14 @@ function my_custom_loop_archive() {
 	if ( 'chintai' === $post_type_info['slug'] ) {
 		global $wp_query;
 		$options      = array(
-			'layout'                     => 'card',
+			// card, card-noborder, card-intext, card-horizontal , media, postListText
+			'layout'                     => 'media',
 			'display_image'              => true,
 			'display_image_overlay_term' => true,
-			'display_excerpt'            => false,
-			'display_author'             => false,
-			'display_date'               => true,
+			'display_excerpt'            => true,
+			'display_date'               => false,
 			'display_new'                => true,
-			'display_taxonomies'         => false,
+			'display_taxonomies'         => true,
 			'display_btn'                => false,
 			'image_default_url'          => false,
 			'overlay'                    => false,
@@ -249,8 +249,7 @@ function my_custom_loop_archive() {
 			'btn_align'                  => 'text-right',
 			'new_text'                   => __( 'New!!', 'lightning' ),
 			'new_date'                   => 7,
-			'textlink'                   => true,
-			'class_outer'                => 'vk_post-col-lg-3',
+			'class_outer'                => 'vk_post-col-sm-12 vk_post-col-md-12 vk_post-col-lg-6 vk_post-col-xl-6',
 			'class_title'                => '',
 			'body_prepend'               => '',
 			'body_append'                => '',
@@ -263,7 +262,6 @@ function my_custom_loop_archive() {
 }
 add_action( 'lightning_extend_loop', 'my_custom_loop_archive' );
 ```
-
 
 ---
 ## トップページへの物件の表示
@@ -279,6 +277,9 @@ add_action( 'lightning_extend_loop', 'my_custom_loop_archive' );
 カスタム投稿タイプ表示用のショートコードを作成
 
 ```
+/**
+ * トップページ埋め込み用のショートコードを作成（無料版用）
+ */
 function my_custom_loop() {
 
 	// 表示条件を発行
@@ -289,9 +290,9 @@ function my_custom_loop() {
 	$custom_query     = new WP_Query( $args );
 
 	// 表示するHTML
-	$options = array(
+	$options      = array(
 		// card, card-noborder, card-intext, card-horizontal , media, postListText
-		'layout'                     => 'card-noborder',
+		'layout'                     => 'media',
 		'display_image'              => true,
 		'display_image_overlay_term' => true,
 		'display_excerpt'            => true,
@@ -305,7 +306,7 @@ function my_custom_loop() {
 		'btn_align'                  => 'text-right',
 		'new_text'                   => __( 'New!!', 'lightning' ),
 		'new_date'                   => 7,
-		'class_outer'                => 'vk_post-col-sm-6 vk_post-col-md-4 vk_post-col-xl-3',
+		'class_outer'                => 'vk_post-col-sm-12 vk_post-col-md-12 vk_post-col-lg-6 vk_post-col-xl-6',
 		'class_title'                => '',
 		'body_prepend'               => '',
 		'body_append'                => '',
@@ -320,6 +321,75 @@ add_shortcode( 'my_custom_loop', 'my_custom_loop' );
 ```
 
 トップページに指定した固定ページに、「ショートコード」ブロックで `[my_custom_loop]` を入力
+
+
+### 物件情報用のパラメーターを纏める
+
+今まで $options = array( 〜 で始まるパラメーターが数回出てきましたが、どれも物件情報を表示するためのものなので、内容は同じになるはずです。
+複数箇所に分かれていると、変更の際にどれか変更漏れが発生するので、 $options のパラメーターを返す関数を作ってまとめます。
+
+```
+/**
+ * 賃貸物件で表示する設定値を取得する関数
+ */
+function my_get_options_chintai(){
+	$options = array(
+		// card, card-noborder, card-intext, card-horizontal , media, postListText
+		'layout'                     => 'media',
+		'display_image'              => true,
+		'display_image_overlay_term' => true,
+		'display_excerpt'            => true,
+		'display_date'               => false,
+		'display_new'                => true,
+		'display_taxonomies'         => true,
+		'display_btn'                => false,
+		'image_default_url'          => false,
+		'overlay'                    => false,
+		'btn_text'                   => __( 'Read more', 'lightning' ),
+		'btn_align'                  => 'text-right',
+		'new_text'                   => __( 'New!!', 'lightning' ),
+		'new_date'                   => 7,
+		'class_outer'                => 'vk_post-col-sm-12 vk_post-col-md-12 vk_post-col-lg-6 vk_post-col-xl-6',
+		'class_title'                => '',
+		'body_prepend'               => '',
+		'body_append'                => '',
+	);
+	return $option;
+}
+```
+
+これを使って、例えば上記のショートコードなら以下のように書き換えられます。
+
+```
+/**
+ * トップページ埋め込み用のショートコードを作成（無料版用）
+ */
+function my_custom_loop() {
+
+	// 表示条件を発行
+	$args         = array( 
+		'post_type' => 'chintai', /* 表示する投稿タイプ */
+		'posts_per_page' => 12,
+	);
+	$custom_query     = new WP_Query( $args );
+
+	// 表示するHTML
+	$options      = my_get_options_chintai();
+	$options_loop = array(
+		'class_loop_outer' => '',
+	);
+	$loop_html = VK_Component_Posts::get_loop( $custom_query, $options, $options_loop );
+	return $loop_html;
+}
+add_shortcode( 'my_custom_loop', 'my_custom_loop' );
+```
+
+_g3/template-parts/loop-item-chintai.php も以下のように書き換えられます。
+
+```
+$options      = my_get_options_chintai();
+VK_Component_Posts::the_view( $post, $options );
+```
 
 ---
 
@@ -341,7 +411,9 @@ add_shortcode( 'my_custom_loop', 'my_custom_loop' );
 /**
  * 検索結果画面のレイアウトの改変
  */
-function my_chintai_search_result_vk_post_options( $options ) {
+function my_vk_post_options_chintai_search_result( $options ) {
+
+	// 検索結果画面で該当する投稿が特定のカスタム投稿タイプの場合
 	if ( is_search() && 'chintai' === get_post_type() ) {
 
 		// 賃貸物件とその他の投稿タイプで同じキーワードを含む投稿の場合、
@@ -350,36 +422,66 @@ function my_chintai_search_result_vk_post_options( $options ) {
 		if ( ! empty( $_GET['post_type'] ) ) {
 
 			// 表示する要素の設定を変更
-			$options = array(
-				// card, card-noborder, card-intext, card-horizontal , media, postListText
-				'layout'                     => 'card-noborder',
-				'display_image'              => true,
-				'display_image_overlay_term' => true,
-				'display_excerpt'            => true,
-				'display_date'               => false,
-				'display_new'                => true,
-				'display_taxonomies'         => true,
-				'display_btn'                => false,
-				'image_default_url'          => false,
-				'overlay'                    => false,
-				'btn_text'                   => __( 'Read more', 'lightning' ),
-				'btn_align'                  => 'text-right',
-				'new_text'                   => __( 'New!!', 'lightning' ),
-				'new_date'                   => 7,
-				'class_outer'                => 'vk_post-col-sm-6 vk_post-col-md-4 vk_post-col-xl-3',
-				'class_title'                => '',
-				'body_prepend'               => '',
-				'body_append'                => '',
-			);
+			$options = my_get_options_chintai();
 		}
 	}
 	return $options;
 }
-add_filter( 'vk_post_options', 'my_chintai_search_result_vk_post_options' );
+add_filter( 'vk_post_options', 'my_vk_post_options_chintai_search_result' );
 ```
 
+
 ---
-## カスタムフィールドの表示
+## カスタムフィールドの登録・表示
+
+* プラグイン Advance Custom Fields をインストール・有効化
+* カスタムフィールド > 新規追加
+* フィールドを登録 & フィールドグループを表示する条件を指定
+
+### カスタムフィールドの値などを投稿一覧に挿入する
+
+既に作成済みの 賃貸情報 で表示する設定に、カスタムフィールドの情報を追加します
+
+```
+/**
+ * 賃貸物件で表示する設定値を取得する関数
+ */
+function my_get_option_chintai(){
+
+	// カスタムフィールドの値など独自に表示したい要素
+	global $post;
+	$append_html  = '<p class="data-yachin"><span class="data-yachin-number">' . esc_html( $post->yachin ) . '</span>万円</p>';
+	$append_html .= '<table class="table-sm mt-3">';
+	$append_html .= '<tr><th>管理費</th><td class="text-right">' . esc_html( $post->kanrihi ) . '円</td></tr>';
+	$append_html .= '<tr><th>礼金</th><td class="text-right">' . esc_html( $post->reikin ) . '円</td></tr>';
+	$append_html .= '<tr><th>築年数</th><td class="text-right">' . esc_html( $post->chikunen ) . '年</td></tr>';
+	$append_html .= '</table>';
+
+	$options = array(
+		// card, card-noborder, card-intext, card-horizontal , media, postListText
+		'layout'                     => 'media',
+		'display_image'              => true,
+		'display_image_overlay_term' => true,
+		'display_excerpt'            => true,
+		'display_date'               => false,
+		'display_new'                => true,
+		'display_taxonomies'         => true,
+		'display_btn'                => false,
+		'image_default_url'          => false,
+		'overlay'                    => false,
+		'btn_text'                   => __( 'Read more', 'lightning' ),
+		'btn_align'                  => 'text-right',
+		'new_text'                   => __( 'New!!', 'lightning' ),
+		'new_date'                   => 7,
+		'class_outer'                => 'vk_post-col-sm-12 vk_post-col-md-12 vk_post-col-lg-6 vk_post-col-xl-6',
+		'class_title'                => '',
+		'body_prepend'               => '',
+		'body_append'                => $append_html,
+	);
+	return $option;
+}
+```
+
 
 
 

@@ -8,3 +8,18 @@ Author:
 Tags: 
 Version: 0.1.0
 */
+
+.data-yachin-number{
+    color:#c00;
+    font-size:1.4em;
+    margin-right:0.5rem;
+}
+.table-sm th,
+.table-sm td {
+    font-size:12px;
+    padding:5px;
+}
+.table-sm th {
+    text-align: left;
+    font-weight: normal;
+}
