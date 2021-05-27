@@ -2,9 +2,12 @@
 
 https://github.com/vektor-inc/lightning-g3-lesson-real-estate
 
-Lightningで極めて簡単な物件情報サイトを作る練習用の子テーマです。
+Lightningで極めて簡単な物件情報サイトを作る練習用のファイルです。
+テーマディレクトリにアップロードすれば子テーマとして、
+プラグインディレクトリにアップロードすればプラグインとして動作します。
 
-目標
+本文中に記載のある PHPのコードは、functions.php に記載すれば動きます。
+
 
 ## 目次
 
