@@ -88,6 +88,10 @@ WordPressには標準で「投稿」「固定ページ」という投稿タイ�
 
 カスタム投稿タイプやカスタム分類を新規に作成・変更した時は 設定 > パーマリンク設定 を保存しないと正しく反映されない。
 
+#### おまけ
+
+プラグイン Admin Column めっちゃええで。
+
 ---
 
 ### カスタム投稿タイプやカスタム分類をコードを書いて設定する場合
@@ -662,3 +666,5 @@ function my_add_bukken_info($post){
 }
 add_action( 'lightning_entry_body_apppend', 'my_add_bukken_info' );
 ```
+
+---
