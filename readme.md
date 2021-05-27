@@ -619,12 +619,15 @@ add_filter( 'vk_post_options', 'my_vk_post_options_chintai' );
 /**
  * 賃貸物件で表示する投稿情報にカスタムフィールドの値を追加
  */
-function my_vk_post_options_chintai_add_cf( $options ){
+function my_vk_post_options_chintai_add_cf( $options ) {
 
-	if ( 'chintai' === get_post_type() ){
+	if ( 'chintai' === get_post_type() ) {
 		// カスタムフィールドの値など独自に表示したい要素
 		global $post;
-		$append_html  = '<p class="data-yachin"><span class="data-yachin-number">' . esc_html( $post->yachin ) . '</span>万円</p>';
+		$append_html  = '';
+        if ( $post->yachin ){
+            $append_html .= '<p class="data-yachin"><span class="data-yachin-number">' . esc_html( $post->yachin ) . '</span>万円</p>';
+        }
 		$append_html .= '<table class="table-sm mt-3">';
 		$append_html .= '<tr><th>管理費</th><td class="text-right">' . esc_html( $post->kanrihi ) . '円</td></tr>';
 		$append_html .= '<tr><th>礼金</th><td class="text-right">' . esc_html( $post->reikin ) . '円</td></tr>';
