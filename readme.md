@@ -641,7 +641,7 @@ function my_vk_post_options_chintai_add_cf( $options ) {
 		$options['body_append'] .= $append_html;
 	}
 
-	return $option;
+	return $options;
 }
 add_filter( 'vk_post_options', 'my_vk_post_options_chintai_add_cf' );
 ```
